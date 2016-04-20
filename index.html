@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Galaxian</title>
+    <style>
+        body {
+            background: black;
+            width: 100%;
+            height: 100%;
+        }
+        canvas {
+            width: 640px;
+            height: 480px;
+            position: absolute;
+            margin: -280px -320px;
+            border: 3px inset #ccc;
+            left: 50%;
+            top: 50%;
+        }
+
+        @font-face {
+            font-family: NES;
+            src: url(assets/fonts/PressStart2P.ttf);
+        }
+    </style>
+</head>
+<body>
+    <canvas id="screen" width="640" height="480"></canvas>
+    <script src="./game.min.js"></script>
+    <script src="./main.js"></script>
+</body>
+</html>
