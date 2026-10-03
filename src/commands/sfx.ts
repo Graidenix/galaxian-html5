@@ -1,4 +1,4 @@
-import { Howl } from 'howler';
+import { Howl, Howler } from 'howler';
 
 /**
  * A single sound effect backed by Howler.
@@ -10,6 +10,11 @@ export default class Sfx {
     /** @param src URL relative to `index.html`, e.g. `./assets/sfx/fire.wav` */
     constructor(src: string) {
         this.howl = new Howl({ src: [src] });
+    }
+
+    /** Mutes or unmutes every sound globally. */
+    static setMuted(muted: boolean): void {
+        Howler.mute(muted);
     }
 
     /** Plays once. */

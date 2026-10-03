@@ -29,6 +29,7 @@ Galaxian HTML5 recreates the original Galaxian: the formation sways back and for
 - 🏆 **Persistent high score:** your best score is saved in `localStorage`.
 - 🌌 **Parallax starfield:** stars fall at several speeds behind the action.
 - 🔊 **Arcade sound:** effects play through [Howler.js](https://howlerjs.com/), with overlapping playback and mobile audio unlock.
+- ⏸️ **Auto-pause:** the game pauses and goes silent when you switch tabs or windows. Press `Esc` to resume.
 - ⏱️ **Smooth timing:** a `requestAnimationFrame` loop with a fixed timestep, so the game plays at the same speed on 60 Hz and 144 Hz displays.
 
 ## Controls
@@ -40,6 +41,7 @@ Galaxian HTML5 recreates the original Galaxian: the formation sways back and for
 | Menu up/down  | `↑` `↓` or `W` `S`   |
 | Start         | `Enter`              |
 | Pause         | `Esc`                |
+| Mute          | `M`                  |
 
 ## Getting started
 

@@ -34,9 +34,9 @@ npm run lint
 
 **Events** (`src/events.ts`). A typed mitt bus: `alienKilled`, `scoreChanged`, `shipDestroyed`, `stageCleared`. `Game.bindEvents` handles score, lives and screen transitions; `Hud` listens to `scoreChanged`; `GameScreen` reloads the ship on `alienKilled`. Use `game.switchScreen(name)` (sets screen + `init()`) for transitions.
 
-**Screens** (`src/screens/`). Each screen implements the `Screen` interface (`init()`, `draw()`, `send(action)`). `buildScreen(name: ScreenName)` is the factory, and `game.getScreen(name)` caches instances, so `init()` re-runs on every `game.switchScreen(name)`. Flow: home → ready → game → ready (next stage, or after losing a life) / over → home. Pause swaps in the `pause` screen, saves the previous one in `game.pauseState`, and stops the rAF loop. `GameScreen.resetShip()` drops the ship after death so the next `init()` builds a new one.
+**Screens** (`src/screens/`). Each screen implements the `Screen` interface (`init()`, `draw()`, `send(action)`). `buildScreen(name: ScreenName)` is the factory, and `game.getScreen(name)` caches instances, so `init()` re-runs on every `game.switchScreen(name)`. Flow: home → ready → game → ready (next stage, or after losing a life) / over → home. Pause swaps in the `pause` screen, saves the previous one in `game.pauseState`, stops the rAF loop and mutes sound. Window blur or a hidden tab also pauses. On game over, `GameScreen.reset()` discards the ship and swarm, so the next game starts with a full formation. `GameScreen.resetShip()` drops the ship after death so the next `init()` builds a new one.
 
-**Input** (`src/commands/gamepad.ts`). `Game.defineGamepad` listens to `keydown`/`keyup` and maps `KeyboardEvent.code` via the `KEYS` table to actions (`UP`, `DOWN`, `LEFT`, `RIGHT`, `FIRE`, `START`, `PAUSE`). Held keys are tracked in `game.gamepad` and polled with `isDown()` (ship movement in `GameScreen.steer`). Non-repeat presses are discrete: `PAUSE` toggles the loop, others go to `game.screen.send(action)`. Held state resets on window blur and pause.
+**Input** (`src/commands/gamepad.ts`). `Game.defineGamepad` listens to `keydown`/`keyup` and maps `KeyboardEvent.code` via the `KEYS` table to actions (`UP`, `DOWN`, `LEFT`, `RIGHT`, `FIRE`, `START`, `PAUSE`, `MUTE`). Held keys are tracked in `game.gamepad` and polled with `isDown()` (ship movement in `GameScreen.steer`). Non-repeat presses are discrete: `PAUSE` toggles the loop and `MUTE` (M) toggles the player's mute. Other presses go to `game.screen.send(action)`. Audio is muted when the player has muted it or the game is paused (`Game.applyMute` → `Sfx.setMuted` → `Howler.mute`). Held state resets on window blur and pause.
 
 **Models** (`src/models/`).
 - `Alien` is an abstract class. Subclasses in `aliens/` pass `txId` (sprite-sheet row) and `score` to `super()` — not as fields, because the base constructor needs them before subclass fields initialize.
@@ -55,7 +55,7 @@ npm run lint
 ## Conventions
 
 - **JSDoc:** every class gets a `/** */` summary, and so does any public member whose purpose or units aren't obvious from its name. Use `@param` only for unclear arguments, and leave types out of tags because TS already has them. Put member docs in `/** */`, not `//`, so they show on hover. Skip trivial members like `draw()`.
-- **Speeds and timing:** speeds are px/s constants divided by `TICK_RATE` per tick. Never hardcode per-tick amounts or 24/60.
+- **Speeds and timing:** speeds are px/s constants divided by `TICK_RATE` per tick. Never hardcode per-tick amounts or 24/60. For any gameplay delay that changes state (a screen switch, an emitted event), count it down in ticks rather than with `setTimeout`, so it freezes while paused. `ReadyScreen` and `Ship.explode` work this way.
 - **Cross-module effects:** emit an event on the `events` bus and handle it in its owner (usually `Game.bindEvents`), rather than mutating another module's state through `window.game`.
 - **New keys:** add them to the `KEYS` table in `gamepad.ts` (and to `Action` if it's a new action).
 - **New modules** in `commands/`, `elements/`, `models/` or `screens/` need an export in their folder's `index.ts`.

@@ -28,17 +28,30 @@ export default class GameScreen implements Screen {
         this.swarm?.recall();
     }
 
+    /** Discards the ship and swarm (game over) so the next game starts with a full formation. */
+    reset(): void {
+        this.swarm?.stop();
+        this.swarm = null;
+        this.ship = null;
+    }
+
     draw(): void {
-        if (!this.ship || !this.swarm) {
+        const {ship, swarm} = this;
+        if (!ship || !swarm) {
             return;
         }
 
         this.steer(window.game.gamepad);
-        this.swarm.draw(this.ship);
-        this.ship.draw();
+        swarm.draw(ship);
+        ship.draw();
 
-        if (this.swarm.aliens.length === 0) {
-            this.swarm.waveSfx.stop();
+        // ship.draw() can emit shipDestroyed, whose handler may reset this screen.
+        if (this.swarm !== swarm) {
+            return;
+        }
+
+        if (swarm.aliens.length === 0) {
+            swarm.stop();
             this.swarm = null;
             events.emit('stageCleared');
         }

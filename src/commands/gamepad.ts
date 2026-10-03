@@ -1,5 +1,5 @@
 /** Logical input action a key maps to. */
-export type Action = 'UP' | 'DOWN' | 'LEFT' | 'RIGHT' | 'FIRE' | 'START' | 'PAUSE';
+export type Action = 'UP' | 'DOWN' | 'LEFT' | 'RIGHT' | 'FIRE' | 'START' | 'PAUSE' | 'MUTE';
 
 /** Maps `KeyboardEvent.code` to an {@link Action}. */
 const KEYS: Record<string, Action> = {
@@ -14,7 +14,8 @@ const KEYS: Record<string, Action> = {
     Space: 'FIRE',
     Enter: 'START',
     NumpadEnter: 'START',
-    Escape: 'PAUSE'
+    Escape: 'PAUSE',
+    KeyM: 'MUTE'
 };
 
 /**

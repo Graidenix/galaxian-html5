@@ -149,6 +149,12 @@ export default class Swarm {
         });
     }
 
+    /** Silences the swarm and drops its bombs; call when discarding it. */
+    stop(): void {
+        this.waveSfx.stop();
+        this.bombs = [];
+    }
+
     /** Sends every flying alien back to the formation from the top and clears bombs (after the ship dies). */
     recall(): void {
         this.aliens.forEach((alien) => alien.recall());

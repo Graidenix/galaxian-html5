@@ -1,5 +1,5 @@
 import { Background, Footer, Hud } from '@game/elements';
-import { Gamepad, Text } from '@game/commands';
+import { Gamepad, Sfx, Text } from '@game/commands';
 import type { Player } from '@game/models';
 import { buildScreen, type Screen, type ScreenMap, type ScreenName } from '@game/screens';
 import events from './events.js';
@@ -34,6 +34,8 @@ export default class Game {
     private readonly screens: Partial<ScreenMap> = {};
     private pauseState: Screen | null;
     private running = false;
+    /** Mute toggled by the player (M); sound is also muted while paused. */
+    private muted = false;
     private rafId = 0;
 
     /** Registers `window.game`, builds the shared parts and starts the loop on the home screen. */
@@ -58,9 +60,14 @@ export default class Game {
         });
 
         events.on('shipDestroyed', () => {
-            this.getScreen('game').resetShip();
             this.player.lifes--;
-            this.switchScreen(this.player.lifes <= 0 ? 'over' : 'ready');
+            if (this.player.lifes <= 0) {
+                this.getScreen('game').reset();
+                this.switchScreen('over');
+            } else {
+                this.getScreen('game').resetShip();
+                this.switchScreen('ready');
+            }
         });
 
         events.on('stageCleared', () => {
@@ -80,7 +87,7 @@ export default class Game {
         return (this.screens[name] ??= buildScreen(name)) as ScreenMap[N];
     }
 
-    /** Toggles pause: stops the loop and shows the pause overlay, or resumes. */
+    /** Toggles pause: stops the loop, mutes sound and shows the pause overlay, or resumes. */
     pause(): void {
         if (this.running) {
             cancelAnimationFrame(this.rafId);
@@ -89,9 +96,21 @@ export default class Game {
             this.pauseState = this.screen;
             this.screen = this.getScreen('pause');
             this.screen.draw();
+            this.applyMute();
         } else {
             this.start();
         }
+    }
+
+    /** Toggles the player's mute. */
+    toggleMute(): void {
+        this.muted = !this.muted;
+        this.applyMute();
+    }
+
+    /** Sound plays only while running and not muted by the player. */
+    private applyMute(): void {
+        Sfx.setMuted(this.muted || !this.running);
     }
 
     /** Starts the requestAnimationFrame loop at `TICK_RATE`. No-op if already running. */
@@ -105,6 +124,7 @@ export default class Game {
             this.pauseState = null;
         }
         this.running = true;
+        this.applyMute();
 
         let accumulator = 0;
         let lastTime = performance.now();
@@ -130,7 +150,10 @@ export default class Game {
         this.rafId = requestAnimationFrame(frame);
     }
 
-    /** Attaches keyboard listeners: tracks held keys and forwards presses to the current screen. */
+    /**
+     * Attaches keyboard listeners: tracks held keys, handles PAUSE/MUTE, and forwards
+     * other presses to the current screen. Losing window focus or tab visibility pauses.
+     */
     defineGamepad(): void {
         document.addEventListener('keydown', (ev) => {
             const action = Gamepad.get(ev.code);
@@ -149,6 +172,10 @@ export default class Game {
                 this.pause();
                 return;
             }
+            if (action === 'MUTE') {
+                this.toggleMute();
+                return;
+            }
             this.screen.send(action);
         });
 
@@ -156,8 +183,18 @@ export default class Game {
             this.gamepad.release(ev.code);
         });
 
-        window.addEventListener('blur', () => {
+        // Losing focus pauses (Esc resumes); held keys are released either way.
+        const suspend = (): void => {
             this.gamepad.reset();
+            if (this.running) {
+                this.pause();
+            }
+        };
+        window.addEventListener('blur', suspend);
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                suspend();
+            }
         });
     }
 

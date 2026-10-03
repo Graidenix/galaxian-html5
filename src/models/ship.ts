@@ -5,9 +5,12 @@ import type { Point } from './point.js';
 
 const SPEED = 192;        // px/s
 const BULLET_SPEED = 360; // px/s
+const EXPLODE_TIME = 1;   // s before shipDestroyed
 
 /** Ship states. */
 export const ShipState = {
+    /** Explosion finished; `shipDestroyed` has been emitted. */
+    DESTROYED: 0,
     EXPLODING: 1,
     ALIVE: 2,
 } as const;
@@ -39,6 +42,8 @@ export default class Ship {
     });
 
     private readonly fireSfx = new Sfx('./assets/sfx/fire.wav');
+    // Counted in ticks (not setTimeout) so it freezes while paused.
+    private explodeTimer = 0;
 
     draw(): void {
         if (this.state === ShipState.ALIVE) {
@@ -48,6 +53,11 @@ export default class Ship {
             this.shipImg.draw(this.pos.x, this.pos.y);
         } else if (this.state === ShipState.EXPLODING) {
             this.shipExplode.draw(this.pos.x - 18, this.pos.y - 19);
+            this.explodeTimer -= 1 / TICK_RATE;
+            if (this.explodeTimer <= 0) {
+                this.state = ShipState.DESTROYED;
+                events.emit('shipDestroyed');
+            }
         }
     }
 
@@ -116,11 +126,12 @@ export default class Ship {
         this.bullet = {x: 0, y: 0};
     }
 
-    /** Plays the explosion and emits `shipDestroyed` 1 s later. */
+    /** Plays the explosion and emits `shipDestroyed` after EXPLODE_TIME of game time. */
     explode(): void {
+        if (this.state !== ShipState.ALIVE) {
+            return;
+        }
         this.state = ShipState.EXPLODING;
-        setTimeout(() => {
-            events.emit('shipDestroyed');
-        }, 1000);
+        this.explodeTimer = EXPLODE_TIME;
     }
 }
