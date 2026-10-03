@@ -55,7 +55,7 @@ npm run lint
 
 **Rendering helpers** (`src/commands/`).
 - `Sprite` crops frames out of a sprite sheet. The frame index selects the x offset and `line` selects the y offset.
-- `Sfx` wraps a Howler `Howl` (overlapping playback, mobile audio unlock).
+- `Sfx` wraps a Howler `Howl` (overlapping playback). iOS audio (Safari and Chrome are both WebKit): `Howler.autoSuspend = false`, because a resume outside a gesture can fail. `Sfx.enableOnUserGesture()` (called in `main.ts`) sets `navigator.audioSession.type = 'playback'` so the silent switch doesn't mute the game, and resumes `Howler.ctx` on every `touchend`/`pointerup`/`click`/`keydown`. Howler's own unlock runs only once, but iOS re-suspends the context after interruptions, and touch-down isn't a gesture in WebKit.
 - `Text` (in `color.ts`) maps a 16-color palette index (`0x0`–`0xF`) to `fillStyle` and sets the size of the `NES` font. The `@font-face` for `NES` is declared in `index.html`.
 
 ## Conventions

@@ -1,4 +1,5 @@
 import Game from './game.js';
+import { Sfx } from '@game/commands';
 import bindDisplay from './display.js';
 import bindLegend from './legend.js';
 
@@ -7,6 +8,8 @@ const ctx = canvas.getContext('2d');
 if (!ctx) {
     throw new Error('Canvas 2D context unavailable');
 }
+
+Sfx.enableOnUserGesture();
 
 const game = new Game(ctx);
 game.defineGamepad();
