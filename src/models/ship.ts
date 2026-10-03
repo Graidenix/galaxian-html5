@@ -51,6 +51,22 @@ export default class Ship {
         }
     }
 
+    /** The bullet's position while in flight, otherwise `null`. */
+    get activeBullet(): Point | null {
+        return this.readyState ? null : this.bullet;
+    }
+
+    /**
+     * Whether a `width`×`height` box at `pos` (top-left) overlaps the ship's hull.
+     * The hitbox is inset from the 26×39 sprite to its visible body.
+     */
+    overlaps(pos: Point, width: number, height = width): boolean {
+        return pos.x < this.pos.x + 22 &&
+            pos.x + width > this.pos.x + 4 &&
+            pos.y < this.pos.y + 39 &&
+            pos.y + height > this.pos.y + 8;
+    }
+
     /** Moves left one tick's worth, clamped to the playfield. */
     left(): void {
         this.pos.x = Math.max(40, this.pos.x - SPEED / TICK_RATE);

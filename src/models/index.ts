@@ -1,4 +1,5 @@
-export { default as Alien, AlienState } from './alien.js';
+export { default as Alien, AlienState, type DiveSide } from './alien.js';
+export { default as Bomb } from './bomb.js';
 export { default as Flagship } from './aliens/flagship.js';
 export { default as AlienGreen } from './aliens/green.js';
 export { default as AlienPurple } from './aliens/purple.js';

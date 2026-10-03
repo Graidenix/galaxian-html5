@@ -22,9 +22,10 @@ export default class GameScreen implements Screen {
         this.swarm ??= new Swarm();
     }
 
-    /** Drops the ship so the next `init()` builds a fresh one. */
+    /** Drops the ship so the next `init()` builds a fresh one, and calls attacking aliens back. */
     resetShip(): void {
         this.ship = null;
+        this.swarm?.recall();
     }
 
     draw(): void {
@@ -33,7 +34,7 @@ export default class GameScreen implements Screen {
         }
 
         this.steer(window.game.gamepad);
-        this.swarm.draw(this.ship.bullet);
+        this.swarm.draw(this.ship);
         this.ship.draw();
 
         if (this.swarm.aliens.length === 0) {

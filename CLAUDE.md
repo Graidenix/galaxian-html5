@@ -40,9 +40,12 @@ npm run lint
 
 **Models** (`src/models/`).
 - `Alien` is an abstract class. Subclasses in `aliens/` pass `txId` (sprite-sheet row) and `score` to `super()` — not as fields, because the base constructor needs them before subclass fields initialize.
-- `Swarm` builds the formation: a grid of rows (flagships, red, purple, then 3 rows of green). It moves the formation side to side. `Swarm.draw(bullet)` runs `alien.isAlive(bullet)`, which also does hit detection; a hit emits `alienKilled`.
+- `Swarm` builds the formation: a grid of rows (flagships, red, purple, then 3 rows of green). Each alien has a fixed `slot`. The formation sways by moving `Swarm.offsetX`, and in-formation aliens sit at `slot + offsetX`. `Swarm.draw(ship)` runs one tick: `alien.isAlive(ship.activeBullet)` does hit detection (only against a bullet in flight; a hit emits `alienKilled`), then sway, then `alien.update()`, then collisions and dive launches (only while the ship is alive), then bombs, then draw.
+- **Dive attacks**: on a random timer (`DIVE_DELAY`, which shortens as aliens die; at most `MAX_DIVERS` out at once), an alien from a row end does a half-loop up and outward, then falls toward the ship. It steers until `COMMIT_DISTANCE` above the ship, so the player can dodge. A diver that touches the ship (`Ship.overlaps`) kills both. Divers that fall off the bottom re-enter from the top as `RETURNING` and fly back to their slot. When the ship dies, `GameScreen.resetShip()` calls `Swarm.recall()`. Flight tuning constants are at the top of `alien.ts`.
+- **Bombs** (`bomb.ts`): during the attack phase, each diver drops 1–`MAX_BOMBS` bombs through `Alien.tryBomb(target)`. They start after a short random delay, are spaced `BOMB_INTERVAL` apart, and stop once the diver is within `BOMB_MIN_GAP` of the ship. A bomb falls at a fixed speed and drifts toward where the ship was when it was fired; the drift is clamped. `Swarm` owns the bombs in flight, and a bomb hitting the ship explodes it. Bombs keep falling after their alien dies, and `Swarm.recall()` clears them.
+- Dive sprites come from `aliens-move.gif`. It has 9 rotation frames per type, from frame 0 (facing down) to frame 8 (facing up), with even and odd rows turning opposite ways. Only green, red and purple have rows there. The flagship rotates its idle sprite with `Sprite.drawRotated` instead.
 - `Ship` allows one bullet at a time: `readyState` gates firing. Explosion and death are sequenced with `setTimeout`.
-- States are `as const` objects with matching types: `AlienState` (`DEAD`, `INJURED`, `ALIVE`, `JUMP_L`, `JUMP_R`) and `ShipState` (`EXPLODING`, `ALIVE`).
+- States are `as const` objects with matching types: `AlienState` (`DEAD`, `INJURED`, `ALIVE` = in formation, `DIVING`, `RETURNING`) and `ShipState` (`EXPLODING`, `ALIVE`).
 
 **Rendering helpers** (`src/commands/`).
 - `Sprite` crops frames out of a sprite sheet. The frame index selects the x offset and `line` selects the y offset.

@@ -58,14 +58,33 @@ export default class Sprite {
         if (this.animate) {
             this.next();
         }
+        this.blit(Math.round(x), Math.round(y));
+    }
+
+    /**
+     * Like {@link Sprite.draw}, but rotated around the sprite's center.
+     * @param angle clockwise rotation in radians
+     */
+    drawRotated(x: number, y: number, angle: number): void {
+        if (this.animate) {
+            this.next();
+        }
+        this.ctx.save();
+        this.ctx.translate(Math.round(x + this.width / 2), Math.round(y + this.height / 2));
+        this.ctx.rotate(angle);
+        this.blit(-this.width / 2, -this.height / 2);
+        this.ctx.restore();
+    }
+
+    private blit(x: number, y: number): void {
         this.ctx.drawImage(
             this.image,
             this.frame * this.width,
             this.line * this.height,
             this.width,
             this.height,
-            Math.round(x),
-            Math.round(y),
+            x,
+            y,
             this.width,
             this.height);
     }
