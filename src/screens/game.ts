@@ -3,7 +3,7 @@ import events from '@game/events.js';
 import type { Action, Gamepad } from '@game/commands';
 import type { Screen } from './screen.js';
 
-/** Gameplay: ship, swarm, steering and firing. */
+/** Gameplay: ship, swarm, steering and firing (hold FIRE to auto-fire). */
 export default class GameScreen implements Screen {
     private ship: Ship | null = null;
     private swarm: Swarm | null = null;
@@ -41,7 +41,7 @@ export default class GameScreen implements Screen {
             return;
         }
 
-        this.steer(window.game.gamepad);
+        this.pollInput(window.game.gamepad);
         swarm.draw(ship);
         ship.draw();
 
@@ -57,12 +57,18 @@ export default class GameScreen implements Screen {
         }
     }
 
-    /** Moves the ship while LEFT/RIGHT is held. */
-    private steer(gamepad: Gamepad): void {
+    /**
+     * Continuous (held) input, polled every tick like a real NES pad: LEFT/RIGHT move,
+     * and a held FIRE auto-fires, re-shooting as soon as the previous bullet is gone.
+     */
+    private pollInput(gamepad: Gamepad): void {
         if (gamepad.isDown('LEFT')) {
             this.ship?.left();
         } else if (gamepad.isDown('RIGHT')) {
             this.ship?.right();
+        }
+        if (gamepad.isDown('FIRE')) {
+            this.ship?.fire();
         }
     }
 

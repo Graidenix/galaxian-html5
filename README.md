@@ -45,7 +45,9 @@ Galaxian HTML5 recreates the original Galaxian: the formation sways back and for
 
 On desktop, the same keys appear as a clickable legend under the game. You can click them to play with a mouse and hold the arrows to move. Pause, Mute and 2× light up while they're on.
 
-On phones, the legend becomes an NES-style gamepad: the D-pad moves, **FIRE** shoots, **START** starts and pauses, and **MUTE** (the select button) toggles sound.
+On phones, the legend becomes an NES-style gamepad: the D-pad moves, **FIRE** shoots, **START** starts and pauses, and **MUTE** (the select button) toggles sound. As on a real pad, you can roll your thumb across the D-pad to change direction without lifting it, and hold a direction and FIRE with two thumbs at once.
+
+Holding **FIRE** (or `Space`) auto-fires. You still get one bullet on screen at a time, as in the arcade, but you fire again the moment it's gone.
 
 ## Getting started
 
