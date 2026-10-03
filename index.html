@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
     <title>Galaxian</title>
     <meta name="description" content="A browser remake of Namco's 1979 arcade classic. Dodge diving aliens and their bombs, and clear the swarm. Play with the keyboard, or with the NES-style pad on a phone.">
     <link rel="canonical" href="https://galaxian.odajiu.eu/">
@@ -64,6 +64,8 @@
             padding: 16px;
             box-sizing: border-box;
             font-family: NES, ui-monospace, monospace;
+            /* No double-tap zoom (iOS ignores user-scalable=no for that). */
+            touch-action: manipulation;
         }
 
         .screen {
