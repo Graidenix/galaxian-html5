@@ -16,7 +16,7 @@ if (screen) {
     bindDisplay(screen);
 }
 
-const legend = document.getElementById('legend');
-if (legend) {
-    bindLegend(legend, game);
+const controls = document.getElementById('controls');
+if (controls) {
+    bindLegend(controls, game);
 }

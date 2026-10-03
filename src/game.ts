@@ -171,7 +171,7 @@ export default class Game {
         if (repeat) {
             return true;
         }
-        if (action === 'PAUSE') {
+        if (action === 'PAUSE' || (action === 'START' && this.isPausable())) {
             this.pause();
         } else if (action === 'MUTE') {
             this.toggleMute();
@@ -185,13 +185,19 @@ export default class Game {
         return true;
     }
 
+    /** Whether START should toggle pause: while paused, or during play (ready/game screens). */
+    private isPausable(): boolean {
+        return !this.running || this.screen === this.getScreen('game') || this.screen === this.getScreen('ready');
+    }
+
     /** Handles a key going up. */
     releaseKey(code: string): void {
         this.gamepad.release(code);
     }
 
     /**
-     * Attaches keyboard listeners: tracks held keys, handles PAUSE/MUTE/CRT/ZOOM, and forwards
+     * Attaches keyboard listeners: tracks held keys, handles PAUSE/MUTE/CRT/ZOOM
+     * (START doubles as pause during play), and forwards
      * other presses to the current screen. Losing window focus or tab visibility pauses.
      */
     defineGamepad(): void {

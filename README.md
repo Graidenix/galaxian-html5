@@ -29,7 +29,7 @@ Galaxian HTML5 recreates the original Galaxian: the formation sways back and for
 - 🏆 **Persistent high score:** your best score is saved in `localStorage`.
 - 🌌 **Parallax starfield:** stars fall at several speeds behind the action.
 - 🔊 **Arcade sound:** effects play through [Howler.js](https://howlerjs.com/), with overlapping playback and mobile audio unlock.
-- ⏸️ **Auto-pause:** the game pauses and goes silent when you switch tabs or windows. Press `Esc` to resume.
+- ⏸️ **Auto-pause:** the game pauses and goes silent when you switch tabs or windows. Press `Enter` to resume.
 - ⏱️ **Smooth timing:** a `requestAnimationFrame` loop with a fixed timestep, so the game plays at the same speed on 60 Hz and 144 Hz displays.
 
 ## Controls
@@ -39,12 +39,13 @@ Galaxian HTML5 recreates the original Galaxian: the formation sways back and for
 | Move          | `←` `→` or `A` `D`   |
 | Fire          | `Space`              |
 | Menu up/down  | `↑` `↓` or `W` `S`   |
-| Start         | `Enter`              |
-| Pause         | `Esc`                |
+| Start / Pause | `Enter` (`Esc` also pauses) |
 | Mute          | `M`                  |
 | 2× size       | `2`                  |
 
-The same keys appear as a clickable legend under the game. Click or tap them to play with a mouse or on a touchscreen; you can hold the arrows to move. Pause, Mute and 2× light up while they're on.
+On desktop, the same keys appear as a clickable legend under the game. You can click them to play with a mouse and hold the arrows to move. Pause, Mute and 2× light up while they're on.
+
+On phones, the legend becomes an NES-style gamepad: the D-pad moves, **FIRE** shoots, **START** starts and pauses, and **MUTE** (the select button) toggles sound.
 
 ## Getting started
 
@@ -57,7 +58,7 @@ npm install
 npm run dev
 ```
 
-Open the URL Vite prints, press **Enter**, and defend the galaxy.
+Open the URL Vite prints, press **Enter**, and defend the galaxy, or play it live at **[galaxian.odajiu.eu](https://galaxian.odajiu.eu/)**.
 
 ### Scripts
 
@@ -76,7 +77,8 @@ The build uses relative paths (`base: './'`), so you can host `dist/` from any s
 ```
 src/
 ├── main.ts          # entry: creates the Game on the canvas
-├── legend.ts        # clickable controls legend under the canvas
+├── legend.ts        # clickable keycap legend (desktop) and NES pad (mobile)
+├── display.ts       # 2× size toggle and other display classes
 ├── game.ts          # game loop, screens, input wiring, event handling
 ├── config.ts        # TICK_RATE and shared constants
 ├── events.ts        # typed event bus (mitt)

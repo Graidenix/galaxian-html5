@@ -3,12 +3,13 @@ import events from '@game/events.js';
 import type Game from './game.js';
 
 /**
- * Wires the on-page controls legend (outside the canvas).
+ * Wires the on-page controls outside the canvas: the desktop keycap legend and the
+ * mobile NES-style pad (CSS shows one or the other).
  *
  * Each `button[data-code]` acts as the key named by its `KeyboardEvent.code`:
  * pressing it goes through `Game.pressKey`/`releaseKey`, so held movement works
- * with mouse or touch. Real key presses light up the button for the same action,
- * and the PAUSE/MUTE/ZOOM buttons show `aria-pressed` while active.
+ * with mouse or touch. Real key presses light up every button for the same action.
+ * Buttons with `data-state="pause|mute|zoom"` show `aria-pressed` while that state is on.
  */
 export default function bindLegend(root: HTMLElement, game: Game): void {
     const buttons = Array.from(root.querySelectorAll<HTMLButtonElement>('button[data-code]'));
@@ -44,16 +45,16 @@ export default function bindLegend(root: HTMLElement, game: Game): void {
         buttons.forEach((button) => button.classList.remove('is-down'));
     });
 
-    const toggleButton = (action: string, pressed: boolean): void => {
+    const showState = (state: string, pressed: boolean): void => {
         buttons
-            .filter((button) => Gamepad.get(button.dataset.code ?? '') === action)
+            .filter((button) => button.dataset.state === state)
             .forEach((button) => button.setAttribute('aria-pressed', String(pressed)));
     };
-    events.on('pauseChanged', (paused) => toggleButton('PAUSE', paused));
-    events.on('muteChanged', (muted) => toggleButton('MUTE', muted));
+    events.on('pauseChanged', (paused) => showState('pause', paused));
+    events.on('muteChanged', (muted) => showState('mute', muted));
     let zoomed = false;
     events.on('zoomToggled', () => {
         zoomed = !zoomed;
-        toggleButton('ZOOM', zoomed);
+        showState('zoom', zoomed);
     });
 }
