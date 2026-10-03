@@ -43,6 +43,8 @@ Galaxian HTML5 recreates the original Galaxian: the formation sways back and for
 | Pause         | `Esc`                |
 | Mute          | `M`                  |
 
+The same keys appear as a clickable legend under the game. Click or tap them to play with a mouse or on a touchscreen; you can hold the arrows to move. Pause and Mute light up while they're on.
+
 ## Getting started
 
 Requires [Node.js](https://nodejs.org/) 20.19+ or 22.13+.
@@ -73,6 +75,7 @@ The build uses relative paths (`base: './'`), so you can host `dist/` from any s
 ```
 src/
 ├── main.ts          # entry: creates the Game on the canvas
+├── legend.ts        # clickable controls legend under the canvas
 ├── game.ts          # game loop, screens, input wiring, event handling
 ├── config.ts        # TICK_RATE and shared constants
 ├── events.ts        # typed event bus (mitt)
