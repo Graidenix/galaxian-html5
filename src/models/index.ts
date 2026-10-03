@@ -1,0 +1,9 @@
+export { default as Alien, AlienState } from './alien.js';
+export { default as Flagship } from './aliens/flagship.js';
+export { default as AlienGreen } from './aliens/green.js';
+export { default as AlienPurple } from './aliens/purple.js';
+export { default as AlienRed } from './aliens/red.js';
+export { default as Player } from './player.js';
+export type { Point } from './point.js';
+export { default as Ship, ShipState } from './ship.js';
+export { default as Swarm } from './swarm.js';
