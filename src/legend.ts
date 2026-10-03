@@ -8,7 +8,7 @@ import type Game from './game.js';
  * Each `button[data-code]` acts as the key named by its `KeyboardEvent.code`:
  * pressing it goes through `Game.pressKey`/`releaseKey`, so held movement works
  * with mouse or touch. Real key presses light up the button for the same action,
- * and the PAUSE/MUTE buttons show `aria-pressed` while active.
+ * and the PAUSE/MUTE/ZOOM buttons show `aria-pressed` while active.
  */
 export default function bindLegend(root: HTMLElement, game: Game): void {
     const buttons = Array.from(root.querySelectorAll<HTMLButtonElement>('button[data-code]'));
@@ -51,4 +51,9 @@ export default function bindLegend(root: HTMLElement, game: Game): void {
     };
     events.on('pauseChanged', (paused) => toggleButton('PAUSE', paused));
     events.on('muteChanged', (muted) => toggleButton('MUTE', muted));
+    let zoomed = false;
+    events.on('zoomToggled', () => {
+        zoomed = !zoomed;
+        toggleButton('ZOOM', zoomed);
+    });
 }

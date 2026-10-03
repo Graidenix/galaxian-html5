@@ -42,8 +42,9 @@ Galaxian HTML5 recreates the original Galaxian: the formation sways back and for
 | Start         | `Enter`              |
 | Pause         | `Esc`                |
 | Mute          | `M`                  |
+| 2× size       | `2`                  |
 
-The same keys appear as a clickable legend under the game. Click or tap them to play with a mouse or on a touchscreen; you can hold the arrows to move. Pause and Mute light up while they're on.
+The same keys appear as a clickable legend under the game. Click or tap them to play with a mouse or on a touchscreen; you can hold the arrows to move. Pause, Mute and 2× light up while they're on.
 
 ## Getting started
 

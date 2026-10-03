@@ -175,6 +175,10 @@ export default class Game {
             this.pause();
         } else if (action === 'MUTE') {
             this.toggleMute();
+        } else if (action === 'CRT') {
+            events.emit('crtToggled');
+        } else if (action === 'ZOOM') {
+            events.emit('zoomToggled');
         } else {
             this.screen.send(action);
         }
@@ -187,7 +191,7 @@ export default class Game {
     }
 
     /**
-     * Attaches keyboard listeners: tracks held keys, handles PAUSE/MUTE, and forwards
+     * Attaches keyboard listeners: tracks held keys, handles PAUSE/MUTE/CRT/ZOOM, and forwards
      * other presses to the current screen. Losing window focus or tab visibility pauses.
      */
     defineGamepad(): void {

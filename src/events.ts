@@ -8,6 +8,8 @@ type Events = {
     stageCleared: void;
     pauseChanged: boolean;
     muteChanged: boolean;
+    crtToggled: void;
+    zoomToggled: void;
 };
 
 /**
@@ -19,5 +21,7 @@ type Events = {
  * - `stageCleared`: every alien in the swarm is dead.
  * - `pauseChanged`: the game paused (`true`) or resumed (`false`).
  * - `muteChanged`: the player toggled mute (M); pause muting doesn't emit this.
+ * - `crtToggled`: the player pressed C to toggle the CRT filter (easter egg).
+ * - `zoomToggled`: the player pressed 2 to toggle 2× display size.
  */
 export default mitt<Events>();
