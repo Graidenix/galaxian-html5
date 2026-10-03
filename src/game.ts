@@ -92,6 +92,7 @@ export default class Game {
         if (this.running) {
             cancelAnimationFrame(this.rafId);
             this.running = false;
+            events.emit('pauseChanged', true);
             this.gamepad.reset();
             this.pauseState = this.screen;
             this.screen = this.getScreen('pause');
@@ -106,6 +107,7 @@ export default class Game {
     toggleMute(): void {
         this.muted = !this.muted;
         this.applyMute();
+        events.emit('muteChanged', this.muted);
     }
 
     /** Sound plays only while running and not muted by the player. */
@@ -124,6 +126,7 @@ export default class Game {
             this.pauseState = null;
         }
         this.running = true;
+        events.emit('pauseChanged', false);
         this.applyMute();
 
         let accumulator = 0;
@@ -151,36 +154,51 @@ export default class Game {
     }
 
     /**
+     * Handles a key going down, from the keyboard or the on-page legend.
+     * @param code `KeyboardEvent.code` of the key
+     * @param repeat auto-repeat: only updates held state, no discrete action
+     * @returns whether the key is mapped to an action
+     */
+    pressKey(code: string, repeat = false): boolean {
+        const action = Gamepad.get(code);
+        if (!action) {
+            return false;
+        }
+
+        this.gamepad.press(code);
+
+        // Held keys are polled each tick; discrete actions fire once per press.
+        if (repeat) {
+            return true;
+        }
+        if (action === 'PAUSE') {
+            this.pause();
+        } else if (action === 'MUTE') {
+            this.toggleMute();
+        } else {
+            this.screen.send(action);
+        }
+        return true;
+    }
+
+    /** Handles a key going up. */
+    releaseKey(code: string): void {
+        this.gamepad.release(code);
+    }
+
+    /**
      * Attaches keyboard listeners: tracks held keys, handles PAUSE/MUTE, and forwards
      * other presses to the current screen. Losing window focus or tab visibility pauses.
      */
     defineGamepad(): void {
         document.addEventListener('keydown', (ev) => {
-            const action = Gamepad.get(ev.code);
-            if (!action) {
-                return;
+            if (this.pressKey(ev.code, ev.repeat)) {
+                ev.preventDefault();
             }
-
-            ev.preventDefault();
-            this.gamepad.press(ev.code);
-
-            // Held keys are polled each tick; discrete actions fire once per press.
-            if (ev.repeat) {
-                return;
-            }
-            if (action === 'PAUSE') {
-                this.pause();
-                return;
-            }
-            if (action === 'MUTE') {
-                this.toggleMute();
-                return;
-            }
-            this.screen.send(action);
         });
 
         document.addEventListener('keyup', (ev) => {
-            this.gamepad.release(ev.code);
+            this.releaseKey(ev.code);
         });
 
         // Losing focus pauses (Esc resumes); held keys are released either way.
